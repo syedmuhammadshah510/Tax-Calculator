@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: tax-calculator-run-
+spec:
+  pipelineRef:
+    name: tax-calculator-pipeline
+  params:
+    - name: git-url
+      value: "https://github.com/syedmuhammadshah510/Tax-Calculator.git"
+    - name: git-revision
+      value: "main"
+    # REPLACE <YOUR_ICR_NAMESPACE> with your actual IBM Cloud Container Registry namespace
+    - name: image-reference
+      value: "us.icr.io/<YOUR_ICR_NAMESPACE>/tax-calculator:latest"
+    # REPLACE <YOUR_CODE_ENGINE_PROJECT> with your Code Engine project name
+    - name: ce-project
+      value: "<YOUR_CODE_ENGINE_PROJECT>"
+    - name: ce-app-name
+      value: "tax-calculator"
+  workspaces:
+    - name: pipeline-workspace
+      persistentVolumeClaim:
+        claimName: pipeline-workspace-pvc

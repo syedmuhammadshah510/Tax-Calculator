@@ -1,0 +1,68 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy-code-engine
+spec:
+  description: "Deploys or updates the application on IBM Cloud Code Engine"
+  params:
+    - name: IMAGE
+      type: string
+      description: "Container image reference to deploy"
+    - name: CE_PROJECT
+      type: string
+      description: "Target IBM Cloud Code Engine project name"
+    - name: CE_APP_NAME
+      type: string
+      default: "tax-calculator"
+      description: "Application name in Code Engine"
+    - name: PORT
+      type: string
+      default: "8080"
+      description: "Application listening port"
+    - name: REGION
+      type: string
+      default: "us-south"
+      description: "IBM Cloud target region"
+  steps:
+    - name: deploy-to-code-engine
+      image: icr.io/ibm/ibmcloud-cli:latest
+      env:
+        - name: IBMCLOUD_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: ibmcloud-api-key
+              key: api-key
+              optional: true
+      script: |
+        #!/bin/bash
+        set -e
+
+        if [ -n "$IBMCLOUD_API_KEY" ]; then
+          echo "Logging into IBM Cloud via API Key..."
+          ibmcloud login -r $(params.REGION) --apikey "$IBMCLOUD_API_KEY"
+        else
+          echo "Using existing active CLI session..."
+        fi
+
+        echo "Selecting Code Engine project: $(params.CE_PROJECT)..."
+        ibmcloud ce project select -n $(params.CE_PROJECT)
+
+        if ibmcloud ce app get -n $(params.CE_APP_NAME) >/dev/null 2>&1; then
+          echo "Application exists. Updating application with new image $(params.IMAGE)..."
+          ibmcloud ce app update \
+            --name $(params.CE_APP_NAME) \
+            --image $(params.IMAGE) \
+            --port $(params.PORT)
+        else
+          echo "Creating new Code Engine application..."
+          ibmcloud ce app create \
+            --name $(params.CE_APP_NAME) \
+            --image $(params.IMAGE) \
+            --port $(params.PORT) \
+            --min-scale 1 \
+            --max-scale 2
+        fi
+
+        echo "Retrieving public URL..."
+        ibmcloud ce app get -n $(params.CE_APP_NAME) -o url
+        echo "Deployment to IBM Cloud Code Engine completed!"

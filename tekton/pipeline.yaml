@@ -1,0 +1,82 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: tax-calculator-pipeline
+spec:
+  description: "End-to-end CI/CD pipeline: Clone -> Jasmine Test -> Buildah Build/Push -> Code Engine Deploy"
+  params:
+    - name: git-url
+      type: string
+      description: "Git repository clone URL"
+      default: "https://github.com/syedmuhammadshah510/Tax-Calculator.git"
+    - name: git-revision
+      type: string
+      description: "Git branch or revision to build"
+      default: "main"
+    - name: image-reference
+      type: string
+      description: "Target image destination in IBM Cloud Container Registry"
+    - name: ce-project
+      type: string
+      description: "IBM Cloud Code Engine project name"
+    - name: ce-app-name
+      type: string
+      description: "Name of the Code Engine application"
+      default: "tax-calculator"
+  workspaces:
+    - name: pipeline-workspace
+      description: "Shared volume holding source code across all pipeline tasks"
+
+  tasks:
+    # 1. Clone Git Repository
+    - name: git-clone
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: revision
+          value: $(params.git-revision)
+        - name: deleteExisting
+          value: "true"
+      workspaces:
+        - name: output
+          workspace: pipeline-workspace
+
+    # 2. Run Jasmine Unit Tests (Must pass before image build)
+    - name: npm-test
+      taskRef:
+        name: npm-test
+      runAfter:
+        - git-clone
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+
+    # 3. Build & Push Container Image
+    - name: build-and-push
+      taskRef:
+        name: build-and-push
+      runAfter:
+        - npm-test
+      params:
+        - name: IMAGE
+          value: $(params.image-reference)
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+
+    # 4. Deploy to IBM Cloud Code Engine
+    - name: deploy-code-engine
+      taskRef:
+        name: deploy-code-engine
+      runAfter:
+        - build-and-push
+      params:
+        - name: IMAGE
+          value: $(params.image-reference)
+        - name: CE_PROJECT
+          value: $(params.ce-project)
+        - name: CE_APP_NAME
+          value: $(params.ce-app-name)

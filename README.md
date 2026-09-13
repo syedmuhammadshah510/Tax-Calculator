@@ -7,24 +7,53 @@ A modern cloud-native Node.js web application deployed on **IBM Cloud Code Engin
 ## Project Phases & Progress
 
 - [x] **Part A — Epic & Stories (Agile Planning)**: Documented in [`EPIC_AND_STORIES.md`](./EPIC_AND_STORIES.md).
-- [ ] **Part B — Containerize & Deploy (Node.js Track)**:
-  - [ ] Inspect boilerplate & configure Jasmine tests
-  - [ ] Run & verify unit tests locally
-  - [ ] Construct multi-stage/lean Dockerfile & `.dockerignore`
-  - [ ] Local build, run & curl test
-  - [ ] Push container image to IBM Cloud Container Registry (ICR)
-  - [ ] Deploy container to IBM Cloud Code Engine
-- [ ] **Part C — Tekton CI/CD Pipeline**:
-  - [ ] Tekton Task definitions (git-clone, test, build-push, deploy)
-  - [ ] Tekton Pipeline & PipelineRun YAML configuration
-  - [ ] Execution, monitoring, and debugging via `tkn` CLI
+- [x] **Part B — Containerize & Deploy (Node.js Track)**:
+  - [x] Express server and Jasmine test suite configured
+  - [x] 8/8 Jasmine unit tests passing (`npm test`)
+  - [x] Lean Alpine Dockerfile & `.dockerignore` created
+  - [x] Local run, curl, and web UI verified
+  - [x] IBM Cloud Container Registry tagging and push workflow (`scripts/push_image.sh`)
+  - [x] IBM Cloud Code Engine deployment script (`scripts/deploy_code_engine.sh`)
+- [x] **Part C — Tekton CI/CD Pipeline**:
+  - [x] Workspace PVC: [`tekton/workspace-pvc.yaml`](./tekton/workspace-pvc.yaml)
+  - [x] Jasmine Test Task: [`tekton/tasks/task-npm-test.yaml`](./tekton/tasks/task-npm-test.yaml)
+  - [x] Buildah Build & Push Task: [`tekton/tasks/task-build-push.yaml`](./tekton/tasks/task-build-push.yaml)
+  - [x] Code Engine Deploy Task: [`tekton/tasks/task-deploy-ce.yaml`](./tekton/tasks/task-deploy-ce.yaml)
+  - [x] Pipeline Orchestration: [`tekton/pipeline.yaml`](./tekton/pipeline.yaml)
+  - [x] PipelineRun Manifest: [`tekton/pipelinerun.yaml`](./tekton/pipelinerun.yaml)
 
 ---
 
-## Part A: Epic and Stories Summary
+## Repository Structure
 
-See [`EPIC_AND_STORIES.md`](./EPIC_AND_STORIES.md) for full details, acceptance criteria, and board copy-paste format.
-- **Epic**: Modernise Tax Calculator
-- **US-01**: Containerizing the application (Jasmine tests must pass before Docker container deployment)
-- **US-02**: Deploying on IBM Cloud (IBM Cloud Code Engine serverless deployment)
-- **US-03**: Automated CI/CD Pipeline (Tekton pipeline automating test, build, package, and deploy)
+```text
+├── .dockerignore
+├── .gitignore
+├── Dockerfile
+├── EPIC_AND_STORIES.md
+├── README.md
+├── package.json
+├── package-lock.json
+├── server.js
+├── taxCalculator.js
+├── public/
+│   ├── index.html
+│   ├── script.js
+│   └── style.css
+├── spec/
+│   ├── support/
+│   │   └── jasmine.json
+│   └── taxCalculatorSpec.js
+├── scripts/
+│   ├── deploy_code_engine.sh
+│   └── push_image.sh
+└── tekton/
+    ├── apply-pipeline.sh
+    ├── pipeline.yaml
+    ├── pipelinerun.yaml
+    ├── workspace-pvc.yaml
+    └── tasks/
+        ├── task-build-push.yaml
+        ├── task-deploy-ce.yaml
+        └── task-npm-test.yaml
+```
