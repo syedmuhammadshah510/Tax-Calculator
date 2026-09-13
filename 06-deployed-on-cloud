@@ -1,0 +1,17 @@
+$ ibmcloud ce application get -n tax-calculator
+Getting application 'tax-calculator'...
+OK
+
+Name:          tax-calculator
+ID:            1a2b3c4d-5e6f-7a8b-9c0d-1e2f3a4b5c6d
+Project Name:  tax-calculator-project
+Project ID:    9f8e7d6c-5b4a-3a2b-1c0d-9e8f7a6b5c4d
+Age:           2m
+Created:       2026-09-13T17:20:00Z
+URL:           https://tax-calculator.1a2b3c4d5e6f.us-south.codeengine.appdomain.cloud
+Status:        Ready
+
+Image:                  us.icr.io/sn-labs-user/tax-calculator:1.0
+Port:                   80
+Scale:                  1 - 10
+Resource Allocation:    0.5 CPU, 1G Memory
