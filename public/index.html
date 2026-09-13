@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tax Calculator — Cloud Native Edition</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background-decorations">
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+  </div>
+
+  <div class="container">
+    <header class="header">
+      <div class="badge">☁️ IBM Cloud Code Engine Ready</div>
+      <h1>Tax Calculator</h1>
+      <p class="subtitle">Cloud-native progressive income tax estimation engine with automated CI/CD</p>
+    </header>
+
+    <main class="card calculator-card">
+      <form id="tax-form" class="tax-form">
+        <div class="form-group">
+          <label for="income">Gross Annual Income ($)</label>
+          <div class="input-wrapper">
+            <span class="currency-symbol">$</span>
+            <input type="number" id="income" name="income" placeholder="e.g. 75,000" min="0" step="any" required>
+          </div>
+          <small class="helper-text">Enter total pre-tax earnings for the fiscal year</small>
+        </div>
+
+        <div class="form-group">
+          <label for="deductions">Allowable Deductions ($)</label>
+          <div class="input-wrapper">
+            <span class="currency-symbol">$</span>
+            <input type="number" id="deductions" name="deductions" placeholder="e.g. 5,000" min="0" step="any" value="0">
+          </div>
+          <small class="helper-text">Retirement contributions, health plans, or eligible allowances</small>
+        </div>
+
+        <button type="submit" id="calculate-btn" class="btn primary-btn">
+          <span>Compute Tax Liability</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </form>
+
+      <div id="results" class="results-container hidden">
+        <hr class="divider">
+        <h2 class="results-title">Calculation Summary</h2>
+        
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <span class="metric-label">Taxable Income</span>
+            <span id="res-taxable" class="metric-value">$0.00</span>
+          </div>
+          <div class="metric-card highlight-metric">
+            <span class="metric-label">Total Tax Owed</span>
+            <span id="res-tax-owed" class="metric-value text-accent">$0.00</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Net Take-Home Pay</span>
+            <span id="res-net" class="metric-value text-success">$0.00</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Effective Tax Rate</span>
+            <span id="res-rate" class="metric-value">0%</span>
+          </div>
+        </div>
+
+        <div class="breakdown-section">
+          <h3>Progressive Bracket Breakdown</h3>
+          <div class="table-responsive">
+            <table class="breakdown-table">
+              <thead>
+                <tr>
+                  <th>Bracket Tier</th>
+                  <th>Rate</th>
+                  <th>Taxable in Tier</th>
+                  <th>Tax Contribution</th>
+                </tr>
+              </thead>
+              <tbody id="res-breakdown-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="status-indicator">
+        <span class="status-dot"></span>
+        <span id="server-status">Connecting to Tax Service...</span>
+      </div>
+      <p class="copyright">IBM DevOps & Cloud Native Capstone — Powered by Express & Jasmine</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
